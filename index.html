@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Опросник субъектности · ALPROAILIFE</title>
+  <style>
+    :root {
+      --bg-page: #080b14;
+      --bg-phone: #0d1117;
+      --bg-card: #161b24;
+      --bg-input: #1c2230;
+      --border: #252b38;
+      --border-focus: #4a5cff;
+      --text: #e2e5ec;
+      --text-secondary: #9aa1b4;
+      --text-muted: #6b7280;
+      --accent: #5568ff;
+      --accent-glow: rgba(85, 104, 255, 0.25);
+      --green: #10b981;
+      --green-bg: rgba(16, 185, 129, 0.1);
+      --green-border: rgba(16, 185, 129, 0.3);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.1);
+      --red-border: rgba(239, 68, 68, 0.3);
+      --yellow: #f59e0b;
+      --yellow-bg: rgba(245, 158, 11, 0.1);
+      --yellow-border: rgba(245, 158, 11, 0.3);
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.04);
+      --shadow-glow: 0 0 24px rgba(85, 104, 255, 0.18);
+      --font: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html {
+      height: 100%;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      font-family: var(--font);
+      background: var(--bg-page);
+      background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(85, 104, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 30%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 8px;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .phone-container {
+      width: 100%;
+      max-width: 400px;
+      height: 92vh;
+      height: 92dvh;
+      max-height: 870px;
+      background: var(--bg-phone);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      box-shadow:
+        0 0 0 2px var(--border),
+        0 20px 60px rgba(0, 0, 0, 0.55),
+        0 0 80px rgba(85, 104, 255, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    }
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 18px 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+    }
+    .status-bar .time { font-weight: 600; color: var(--text-secondary); }
+    .status-icons { display: flex; gap: 5px; align-items: center; }
+    .status-icons span { font-size: 10px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; }
+    .app-header {
+      flex-shrink: 0;
+      padding: 8px 16px 14px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--bg-phone) 60%, rgba(13, 17, 23, 0.95) 100%);
+    }
+    .app-header .brand {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(135deg, #7c8aff, #5568ff, #4f46e5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      transition: var(--transition);
+    }
+    .app-header .brand:hover { filter: brightness(1.2); transform: scale(1.03); }
+    .app-header .brand:active { transform: scale(0.97); }
+    .app-header .subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .badge-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-right: 4px;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    }
+    .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 8px 12px 20px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    .page { display: none; animation: fadeSlideIn 0.2s ease; }
+    .page.active { display: block; }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .block-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      margin-bottom: 10px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+    .block-number {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 48px;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.025);
+      pointer-events: none;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+    .block-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 3px; position: relative; z-index: 1; }
+    .block-subtitle { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.3px; position: relative; z-index: 1; }
+    .question-list { margin-top: 8px; position: relative; z-index: 1; }
+    .question-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.02);
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      transition: var(--transition);
+    }
+    .question-item:hover { border-color: #2a3040; }
+    .question-text {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    .answer-buttons {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .answer-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      outline: none;
+      font-family: var(--font);
+    }
+    .answer-btn:active { transform: scale(0.96); }
+    .answer-btn.selected-yes {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--green-border);
+      color: var(--green);
+    }
+    .answer-btn.selected-no {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: var(--red-border);
+      color: var(--red);
+    }
+    .block-warning {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+      background: var(--yellow-bg);
+      color: var(--yellow);
+      border: 1px solid var(--yellow-border);
+    }
+    .final-card {
+      background: linear-gradient(145deg, #1a1f2e 0%, #121722 100%);
+      border: 2px solid #2a3050;
+      border-radius: var(--radius-lg);
+      padding: 18px 16px;
+      margin-top: 6px;
+      box-shadow: var(--shadow-glow);
+      position: relative;
+      overflow: hidden;
+    }
+    .final-card::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(85, 104, 255, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .final-title { font-size: 17px; font-weight: 800; color: #fff; position: relative; z-index: 1; }
+    .result-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.4px;
+      margin-top: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .result-badge.stable { background: var(--green-bg); color: var(--green); border: 1.5px solid var(--green-border); }
+    .result-badge.warning { background: var(--yellow-bg); color: var(--yellow); border: 1.5px solid var(--yellow-border); }
+    .result-badge.risk { background: var(--red-bg); color: var(--red); border: 1.5px solid var(--red-border); }
+    .bottom-nav {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 12px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-phone);
+      gap: 10px;
+      z-index: 5;
+    }
+    .nav-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.4px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border);
+      outline: none;
+    }
+    .nav-btn:active { transform: scale(0.96); background: #1e2430; }
+    .nav-btn.primary { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 4px 12px rgba(85, 104, 255, 0.3); }
+    .nav-btn:disabled { opacity: 0.3; pointer-events: none; }
+    .page-footer-line {
+      text-align: center;
+      padding: 8px 0 16px;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    .page-footer-line a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="phone-container">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="status-icons"><span class="status-dot"></span> <span>●●●●○</span></span>
+  </div>
+  <div class="app-header">
+    <a href="https://max.ru/alproailife" target="_blank" rel="noopener" class="brand">ALPROAILIFE</a>
+    <div class="subtitle"><span class="badge-pulse"></span> опросник субъектности</div>
+  </div>
+
+  <div class="scroll-content" id="scrollContent">
+    <!-- Страницы генерируются JS -->
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn" id="navPrev" onclick="changePage(-1)" style="display:none;">← Назад</button>
+    <button class="nav-btn primary" id="navNext" onclick="changePage(1)">Далее →</button>
+  </div>
+</div>
+
+<script>
+  // ----- ДАННЫЕ БЛОКОВ -----
+  const blocks = [
+    {
+      title: "Авторство и влияние",
+      subtitle: "ощущение авторства и инициативы",
+      questions: [
+        "Я ощущаю свои профессиональные решения навязанными извне.",
+        "Я перестал(а) предлагать идеи, потому что не верю, что это что-то изменит.",
+        "У меня нет ощущения авторства своей работы и роли.",
+        "Я всё чаще думаю, что от меня мало что зависит.",
+        "Я всё реже чувствую, что создаю что-то своё в работе.",
+        "Я замечаю, что стал осторожнее в проявлении инициативы."
+      ]
+    },
+    {
+      title: "Границы и автономия",
+      subtitle: "способность говорить «нет» и опираться на себя",
+      questions: [
+        "Мне трудно сказать «нет», даже когда это правильно.",
+        "Я не могу удерживать свою позицию, если другие недовольны.",
+        "Я часто подстраиваюсь под ожидания окружающих.",
+        "Мне сложно отделить свои желания от ожиданий других людей.",
+        "Я не могу принимать решения без постоянного внешнего подтверждения.",
+        "Я всё реже спрашиваю себя, чего хочу именно я."
+      ]
+    },
+    {
+      title: "Контакт с собой и рефлексия",
+      subtitle: "осознанность и понимание себя",
+      questions: [
+        "Я не понимаю, зачем делаю то, что делаю.",
+        "Я не замечаю свои настоящие мотивы и реакции.",
+        "Я перестал(а) задавать себе вопрос «чего хочу я?».",
+        "У меня нет пространства и времени подумать, только — реагировать.",
+        "Я всё чаще живу в режиме автоматического выполнения задач.",
+        "Мне трудно остановиться и осмыслить происходящее."
+      ]
+    },
+    {
+      title: "Выдерживание напряжения",
+      subtitle: "способность переносить дискомфорт",
+      questions: [
+        "Я принимаю решения, чтобы быстрее снять тревогу.",
+        "Я не способен(на) выдерживать сложные разговоры и напряжение.",
+        "Мне всё сложнее выдерживать эмоции других людей.",
+        "Я замечаю, что тревога всё сильнее влияет на мои решения.",
+        "Я избегаю сложных разговоров.",
+        "Я часто смягчаю свои мысли, чтобы избежать конфликта."
+      ]
+    },
+    {
+      title: "Роль и лидерская позиция",
+      subtitle: "ощущение лидерства и влияния",
+      questions: [
+        "Я всё чаще реагирую на происходящее, а не задаю направление.",
+        "Я замечаю, что избегаю решений, которые могут вызвать напряжение в команде.",
+        "Мне кажется, что роль управляет мной больше, чем я ролью.",
+        "Я не ощущаю, что веду людей, я просто сопровождаю процессы.",
+        "Я всё чаще чувствую себя посредником между чужими ожиданиями.",
+        "Я чувствую, что начинаю спасать людей вместо того, чтобы развивать их."
+      ]
+    },
+    {
+      title: "Смысл и направление",
+      subtitle: "стратегическое видение и перспектива",
+      questions: [
+        "Мне кажется, что стратегия исчезла, и остался только режим выживания.",
+        "Я замечаю, что перестал думать на перспективу.",
+        "Я всё чаще живу от проблемы до проблемы.",
+        "У меня нет ощущения направления и будущего.",
+        "Мне трудно объяснить себе или другим, куда мы движемся.",
+        "Мне кажется, что работа превратилась в бесконечное поддержание процессов."
+      ]
+    },
+    {
+      title: "Отношения и зависимость от внешней оценки",
+      subtitle: "ориентация на одобрение",
+      questions: [
+        "Я постоянно ориентируюсь на реакции других людей.",
+        "Мне важно получать подтверждение, что я всё делаю правильно.",
+        "Я не способен(на) опираться на собственные критерии и оценки.",
+        "Я заранее начинаю оправдываться, даже если меня не обвиняли.",
+        "Я чувствую себя обязанным больше, чем это реально необходимо.",
+        "Чужие эмоции начинают определять мои решения сильнее, чем мои собственные ориентиры."
+      ]
+    },
+    {
+      title: "Организационная среда",
+      subtitle: "контекст и культура",
+      questions: [
+        "В моей организации безопаснее согласиться, чем спорить.",
+        "У людей нет возможности реально влиять на решения.",
+        "В организации много формального участия без настоящего влияния.",
+        "Ответственность часто не сопровождается полномочиями.",
+        "Ошибки сложно обсуждать в коллективе без страха наказания.",
+        "Процессы и согласования всё чаще важнее смысла работы."
+      ]
+    }
+  ];
+
+  const totalPages = blocks.length + 1; // 8 блоков + финал
+  let currentPage = 1;
+  // Ответы храним в массиве массивов: answers[blockIndex][questionIndex] = 'yes' | 'no' | null
+  let answers = blocks.map(b => new Array(b.questions.length).fill(null));
+
+  // ----- РЕНДЕРИНГ -----
+  function renderAllPages() {
+    const container = document.getElementById('scrollContent');
+    container.innerHTML = '';
+    // Блоки
+    for (let i = 0; i < blocks.length; i++) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page' + (i+1 === currentPage ? ' active' : '');
+      pageDiv.id = 'page' + (i+1);
+      pageDiv.innerHTML = `
+        <div class="block-card">
+          <div class="block-number">${i+1}</div>
+          <div class="block-title">Блок ${i+1}. ${blocks[i].title}</div>
+          <div class="block-subtitle">${blocks[i].subtitle}</div>
+          <div class="question-list" id="questions-${i}"></div>
+          <div id="warning-${i}" class="block-warning" style="display:none;">⚠️ Присмотритесь к этой сфере: более 3 ответов «да».</div>
+        </div>
+        <div class="page-footer-line">
+          <a href="https://max.ru/alproailife" target="_blank">ALPROAILIFE</a> · Alexey's Career Notes 🧢 AI & Tech
+        </div>
+      `;
+      container.appendChild(pageDiv);
+      renderQuestions(i);
+    }
+    // Финальная страница
+    const finalPage = document.createElement('div');
+    finalPage.className = 'page' + (currentPage === totalPages ? ' active' : '');
+    finalPage.id = 'page' + totalPages;
+    finalPage.innerHTML = `
+      <div class="final-card">
+        <div class="final-title">📊 Результат опросника</div>
+        <div id="finalResultContent"></div>
+      </div>
+      <div class="page-footer-line">
+        <a href="https://max.ru/alproailife" target="_blank">ALPROAILIFE</a> · Alexey's Career Notes 🧢 AI & Tech
+      </div>
+    `;
+    container.appendChild(finalPage);
+    updateFinalResult();
+  }
+
+  function renderQuestions(blockIndex) {
+    const container = document.getElementById('questions-' + blockIndex);
+    if (!container) return;
+    container.innerHTML = '';
+    const qs = blocks[blockIndex].questions;
+    for (let q = 0; q < qs.length; q++) {
+      const div = document.createElement('div');
+      div.className = 'question-item';
+      const currentAns = answers[blockIndex][q];
+      div.innerHTML = `
+        <span class="question-text">${qs[q]}</span>
+        <div class="answer-buttons">
+          <button class="answer-btn ${currentAns === 'yes' ? 'selected-yes' : ''}" data-block="${blockIndex}" data-q="${q}" data-val="yes">Да</button>
+          <button class="answer-btn ${currentAns === 'no' ? 'selected-no' : ''}" data-block="${blockIndex}" data-q="${q}" data-val="no">Нет</button>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+    // добавляем обработчики событий
+    container.querySelectorAll('.answer-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const block = parseInt(this.dataset.block);
+        const q = parseInt(this.dataset.q);
+        const val = this.dataset.val;
+        // Если уже выбран этот вариант — снимаем (toggle)
+        if (answers[block][q] === val) {
+          answers[block][q] = null;
+        } else {
+          answers[block][q] = val;
+        }
+        // Перерисовать только этот блок вопросов
+        renderQuestions(block);
+        updateBlockWarning(block);
+        updateFinalResult();
+      });
+    });
+  }
+
+  function updateBlockWarning(blockIndex) {
+    const yesCount = answers[blockIndex].filter(a => a === 'yes').length;
+    const warningEl = document.getElementById('warning-' + blockIndex);
+    if (warningEl) {
+      warningEl.style.display = yesCount > 3 ? 'block' : 'none';
+    }
+  }
+
+  function updateFinalResult() {
+    const finalContent = document.getElementById('finalResultContent');
+    if (!finalContent) return;
+    let totalYes = 0;
+    let totalNo = 0;
+    for (let b = 0; b < blocks.length; b++) {
+      for (let q = 0; q < blocks[b].questions.length; q++) {
+        if (answers[b][q] === 'yes') totalYes++;
+        else if (answers[b][q] === 'no') totalNo++;
+      }
+    }
+    const totalAnswered = totalYes + totalNo;
+    const totalQuestions = blocks.length * 6; // 48
+
+    let resultText = '';
+    let resultClass = '';
+    if (totalYes <= 10) {
+      resultText = 'Субъектность устойчива.';
+      resultClass = 'stable';
+    } else if (totalYes <= 20) {
+      resultText = 'Появляются локальные зоны реактивности и потери влияния.';
+      resultClass = 'warning';
+    } else if (totalYes <= 35) {
+      resultText = 'Становится всё сложнее удерживать внутреннюю опору. Растёт адаптация через тревогу, избегание, перегрузку или эмоциональное выгорание.';
+      resultClass = 'risk';
+    } else {
+      resultText = 'Организация, ожидания или обстоятельства всё чаще начинают «жить вами». Вы функционируете скорее как объект давления, чем как субъект влияния.';
+      resultClass = 'risk';
+    }
+
+    finalContent.innerHTML = `
+      <div style="margin:10px 0;font-size:14px;color:var(--text-secondary);">
+        Всего ответов «да»: <strong style="color:#fff;">${totalYes}</strong> из ${totalQuestions} (нет: ${totalNo}, без ответа: ${totalQuestions - totalAnswered})
+      </div>
+      <span class="result-badge ${resultClass}">${resultText}</span>
+      <p style="margin-top:12px;font-size:12px;color:var(--text-muted);">Диапазоны: 0–10 устойчивость · 11–20 локальная реактивность · 21–35 потеря опоры · 36–48 объект давления</p>
+    `;
+  }
+
+  // ----- НАВИГАЦИЯ -----
+  function changePage(delta) {
+    const newPage = currentPage + delta;
+    if (newPage < 1 || newPage > totalPages) return;
+    currentPage = newPage;
+    // Обновляем видимость страниц
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page' + currentPage);
+    if (target) target.classList.add('active');
+    // Обновляем кнопки
+    const prevBtn = document.getElementById('navPrev');
+    const nextBtn = document.getElementById('navNext');
+    prevBtn.style.display = currentPage === 1 ? 'none' : 'inline-block';
+    if (currentPage === totalPages) {
+      nextBtn.style.display = 'none';
+    } else {
+      nextBtn.style.display = 'inline-block';
+      nextBtn.textContent = (currentPage === totalPages - 1) ? 'Завершить' : 'Далее →';
+    }
+    document.getElementById('scrollContent').scrollTop = 0;
+  }
+
+  // ----- ИНИЦИАЛИЗАЦИЯ -----
+  function init() {
+    renderAllPages();
+    // Установить кнопки для текущей страницы
+    const prevBtn = document.getElementById('navPrev');
+    const nextBtn = document.getElementById('navNext');
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'inline-block';
+    nextBtn.textContent = 'Далее →';
+  }
+
+  // Привязываем changePage к window для onclick
+  window.changePage = changePage;
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  // Обновление часов
+  function updateClock() {
+    const now = new Date();
+    const timeEl = document.querySelector('.status-bar .time');
+    if (timeEl) timeEl.textContent = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  }
+  updateClock();
+  setInterval(updateClock, 30000);
+</script>
+</body>
+</html>
